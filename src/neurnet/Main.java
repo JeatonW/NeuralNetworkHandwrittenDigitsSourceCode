@@ -1,10 +1,5 @@
-// Keaton Williams
-// Assignment 2 Part 2
-// 102-67-511
-// 10/21/2025
-//
 // This program creates a sigmoidal neural network with 784 input nodes,
-// 15 hidden nodes, and 10 output nodes. MNIST training and testing data
+// 100 hidden nodes, and 10 output nodes. MNIST training and testing data
 // are extracted from csv files, and each pixel of any given hand-drawn
 // digit is fed into an input node. The network is trained to recognize
 // and accurately assess hand-drawn digits. In addition, it can load or
