@@ -1,3 +1,17 @@
+// Keaton Williams
+// Assignment 2 Part 2
+// 102-67-511
+// 10/21/2025
+//
+// This program creates a sigmoidal neural network with 784 input nodes,
+// 15 hidden nodes, and 10 output nodes. MNIST training and testing data
+// are extracted from csv files, and each pixel of any given hand-drawn
+// digit is fed into an input node. The network is trained to recognize
+// and accurately assess hand-drawn digits. In addition, it can load or
+// save previously trained networks, run network accuracy assessments,
+// show images and labels that the network is currently reviewing, and
+// display information regarding misclassified digits.
+
 package neurnet;
 
 import java.io.File;
@@ -6,6 +20,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -25,9 +41,13 @@ public class Main {
 	 * only be exitted if the user chooses to. **/
 	public static void main(String[] args) throws FileNotFoundException {
 		
+		System.out.println("Creating a nework and loading data, please wait...\n");
+
 		//extract all data from csv files
-		int[][] trainData = ExtractDataFromFile("res/mnist_train.csv");
+		System.out.println("Loading testing data...");
 		int[][] testData = ExtractDataFromFile("res/mnist_test.csv");
+		System.out.println("Loading training data...");
+		int[][] trainData = ExtractDataFromFile("res/mnist_train.csv");
 		
 		//create the network
 		CreateNetwork(trainData);
@@ -42,17 +62,24 @@ public class Main {
 			while(!correctInput) {
 				correctInput = true;
 				PrintUserPrompt();
-				userOption = inputReader.nextInt();
+				
+				try { userOption = inputReader.nextInt(); }
+				catch (Exception e) {
+					System.out.println("\n * ERROR: Please input a valid integer.\n\n");
+					inputReader.next();
+					correctInput = false;
+					continue;
+				}
 				
 				//if a network is loaded, accept inputs 0-7
 				if(networkLoaded && (userOption < 0 || userOption > 7)) {
-					System.out.println("\nInvalid input.\n");
+					System.out.println("\n * ERROR: Please input a valid integer.\n\n");
 					correctInput = false;
 				}
 				
 				//if there is no network loaded, only accept inputs 0-2
 				if(!networkLoaded && (userOption < 0 || userOption > 2)) {
-					System.out.println("\nInvalid input.\n");
+					System.out.println("\n * ERROR: Please input a valid integer.\n\n");
 					correctInput = false;
 				}
 			}
@@ -74,18 +101,18 @@ public class Main {
 				//load the network from a file
 				case 2:
 					try { LoadNetwork(); } 
-					catch (Exception e) { System.out.println("File may not have been created yet.\n"); }
+					catch (Exception e) { System.out.println("File may not have been created yet."); }
 					break;
 					
 				//perform network accuracy on training data
 				case 3:
-					System.out.println("Gathering training accuracy details...\n");
+					System.out.println("\nGathering training accuracy details (this may take a while)...");
 					N.OneIteration(trainData);
 					break;
 					
 				//perform network accuracy on testing data
 				case 4:
-					System.out.println("Gathering testing accuracy details...\n");
+					System.out.println("\nGathering testing accuracy details...");
 					N.OneIteration(testData);
 					break;
 					
@@ -135,10 +162,31 @@ public class Main {
 			correctInput = true;
 			
 			//user has the option of picking one of 3 different save files
-			System.out.println("Select a file [1-3]:");
-			userOption = inputReader.nextInt();
+			System.out.println("\nSelect a file [1-3]:");
+			System.out.println("Current files are:");
+			if(Files.isRegularFile(Path.of("res/network1.txt"))) {
+				System.out.println("[1] network1.txt");
+			}
+			else { System.out.println("[1] EMPTY"); }
+			if(Files.isRegularFile(Path.of("res/network2.txt"))) {
+				System.out.println("[2] network2.txt");
+			}
+			else { System.out.println("[2] EMPTY"); }
+			if(Files.isRegularFile(Path.of("res/network3.txt"))) {
+				System.out.println("[3] network3.txt");
+			}
+			else { System.out.println("[3] EMPTY"); }
+			System.out.println();
+			
+			try { userOption = inputReader.nextInt(); }
+			catch (Exception e) {
+				System.out.println("\n * ERROR: Please input a valid integer.\n\n");
+				inputReader.next();
+				correctInput = false;
+				continue;
+			}
 			if(userOption < 0 || userOption > 3) { //input validation
-				System.out.println("\nInvalid input.\n");
+				System.out.println("\n * ERROR: Please input a valid integer.\n\n");
 				correctInput = false;
 			}
 		}
@@ -150,11 +198,13 @@ public class Main {
 		LoadDataFromFile(outputNetworkName);
 		N.CreateNodes();
 		networkLoaded = true;
+		
+		System.out.println("\nnetwork" + userOption + ".txt successfully loaded.");
 	}
 	
 	/**runs whatever network is currently loaded**/
 	private static void RunNetwork() {
-		System.out.println("Beginning training...\n");
+		System.out.println("\nBeginning training (this may take a while)...");
 		boolean reviseEnabled = true;
 		N.RunTraining();
 		networkLoaded = true;
@@ -170,10 +220,35 @@ public class Main {
 			correctInput = true;
 			
 			//user has the option of picking one of 3 different save files
-			System.out.println("Select a file [1-3]:");
-			userOption = inputReader.nextInt();
+			//user has the option of picking one of 3 different save files
+			System.out.println("\nSelect a file [1-3]:");
+			System.out.println("Current files are:");
+			if(Files.isRegularFile(Path.of("res/network1.txt"))) {
+				System.out.println("[1] network1.txt");
+			}
+			else { System.out.println("[1] EMPTY"); }
+			if(Files.isRegularFile(Path.of("res/network2.txt"))) {
+				System.out.println("[2] network2.txt");
+			}
+			else { System.out.println("[2] EMPTY"); }
+			if(Files.isRegularFile(Path.of("res/network3.txt"))) {
+				System.out.println("[3] network3.txt");
+			}
+			else { System.out.println("[3] EMPTY"); }
+			System.out.println();
+			
+
+			
+			try { userOption = inputReader.nextInt(); }
+			catch (Exception e) {
+				System.out.println("\n * ERROR: Please input a valid integer.\n\n");
+				inputReader.next();
+				correctInput = false;
+				continue;
+			}
+			
 			if(userOption < 0 || userOption > 3) {
-				System.out.println("\nInvalid input.\n");
+				System.out.println("\n * ERROR: Please input a valid integer.\n\n");
 				correctInput = false;
 			}
 		}
@@ -255,7 +330,7 @@ public class Main {
 		catch (IOException e) { e.printStackTrace(); }
 		
 		//tell user the file was written
-		System.out.println("Network saved to file " + outputNetworkName + "\n");
+		System.out.println("\nNetwork saved to file " + outputNetworkName);
 	}
 	
 	/**reads network weights and biases from a file and puts them into a data structure for manipulation**/
@@ -349,19 +424,25 @@ public class Main {
 		
 		//only 3 of the 8 options are available if a network hasn't been loaded or trained yet
 		if(networkLoaded) {
-			System.out.println("Select from one of the available options [0-7]:\n");
+			System.out.println("\nSelect from one of the available options [0-7]:");
+			System.out.println(" * Recommended options are 5 and 6.\n");
+			System.out.println("When browsing misclassified images, you might understand why");
+			System.out.println("the network got the incorrect answer.\n");
 			System.out.println("[1] Train the network.");
 			System.out.println("[2] Load a pre-trained network.");
 			System.out.println("[3] Display network accuracy on TRAINING data.");
 			System.out.println("[4] Display network accuracy on TESTING data.");
 			System.out.println("[5] Run network on TESTING data showing images and labels.");
-			System.out.println("[6] Display the miscalssified TESTING images.");
+			System.out.println("[6] Display the misclassified TESTING images.");
 			System.out.println("[7] Save the network state to a file.");
 			System.out.println("[0] Exit.\n");
 		}
 		else {
-			System.out.println("Select from one of the available options [0-2]:");
+			System.out.println("\nSelect from one of the available options [0-2]:");
 			System.out.println("More options will become available once a network has been loaded or trained.\n");
+			System.out.println("*** A PRE-TRAINED NETWORK HAS ALREADY BEEN PROVIDED FOR YOU.");
+			System.out.println("Enter 2 to load a network, then enter 1 to select network 1.\n");
+			System.out.println("Training a network may take a long time if your system is not very powerful.\n");
 			System.out.println("[1] Train the network.");
 			System.out.println("[2] Load a pre-trained network.");
 			System.out.println("[0] Exit.\n");
@@ -392,7 +473,7 @@ public class Main {
 		Scanner s = null;
 		try { s = new Scanner(f); }
 		catch (FileNotFoundException e) {
-			System.out.println("File \"" + fileName + "\" not found.");
+			System.out.println("\nFile \"" + fileName + "\" not found.");
 		}
 		return s;
 	}

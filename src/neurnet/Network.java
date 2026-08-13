@@ -20,7 +20,7 @@ public class Network {
 
 	//network size given in assignment prompt
 	private int inputCount = 784;
-	private int hiddenCount = 15;
+	private int hiddenCount = 100;
 	private int outputCount = 10;
 	
 	//lists of all nodes within the network
@@ -30,7 +30,7 @@ public class Network {
 	private Node[][] allNodes; //above lists are packed into here when network is created
 	
 	//learning rates and batch sizes
-	private double eta = 3;
+	private double eta = 2;
 	private int batchSize = 10;
 	private int totalMiniBatches;
 	private int totalEpochs = 30;
@@ -59,6 +59,8 @@ public class Network {
 		CreateNodes();
 		System.out.println("Converting training data to batch format...\n");
 		ConvertDataToBatches(trainData);
+		System.out.println("Complete.\n");
+		System.out.println("   -=-=-=-=-=-   ");
 	}
 	
 	/**convert the training data to batch format, and shuffle the training data**/
@@ -224,7 +226,7 @@ public class Network {
 			
 			}
 
-			PrintAccuracy();
+			PrintAccuracy(true);
 			
 			//increment loop cycle and start over
 			epochCount++;
@@ -253,7 +255,7 @@ public class Network {
 		}
 		
 		//print final accuracy
-		PrintAccuracy();
+		PrintAccuracy(false);
 		
 	}
 	
@@ -276,17 +278,20 @@ public class Network {
 			if(!onlyWrongAnswers || ay[0] != ay[1]) {
 			
 				//print stuff
-				System.out.println("Correct classification: " + ay[1] + "        Network Classification: " + ay[0]);
+				System.out.println("\n\n\n\n\n\n\n\n\n\n\n\nCorrect classification: " + ay[1] + "        Network Classification: " + ay[0]);
 				DisplayNumber(allBatchData[i]);
 				System.out.println("The network's assessment of this case was " + assessment + ".\n");
-				System.out.println("Enter 0 to return to the menu. Enter anything else to continue to next case.");
+				System.out.println("Enter 0 to return to the menu. Enter anything else to continue to next case.\n");
 				
 				//prompt user with program options and gather user input
 				@SuppressWarnings("resource")
 				Scanner inputReader = new Scanner(System.in);
-				int userOption = inputReader.nextInt();
-				if(userOption == 0) { //if the user input a 0, exit to menu
-					break;
+				String input = inputReader.nextLine();
+				if (!input.isBlank()) {
+				    int userOption = Integer.parseInt(input);
+				    if (userOption == 0) {
+				        break;
+				    }
 				}
 			}
 		}
@@ -557,9 +562,10 @@ public class Network {
 	}
 	
 	/**accuracy of guesses for part 2**/
-	private void PrintAccuracy() {
+	private void PrintAccuracy(boolean epochsEnabled) {
 		if(skipA2P2Print) { return; }
-		System.out.println("Epoch: " + (epochCount+1) + "/" + totalEpochs);
+		System.out.println();
+		if(epochsEnabled) { System.out.println("Epoch: " + (epochCount+1) + "/" + totalEpochs); }
 		int allCorrectGuesses = 0;
 		int allOccurrences = 0;
 		
@@ -568,12 +574,12 @@ public class Network {
 			System.out.print(i + " = " + writtenNumberTotalGuesses[i] + "/" + writtenNumberTotalOccurrences[i] + " ");
 			allCorrectGuesses += writtenNumberTotalGuesses[i];
 			allOccurrences += writtenNumberTotalOccurrences[i];
-			if(i == 5) { System.out.println(); } //newline after displaying info for digit 5
+			if(i == 4) { System.out.println(); } //newline after displaying info for digit 5
 		}
 		
 		//calculate and display overall accuracy
 		String accuracy = String.format("%.3f", (double) allCorrectGuesses / (double) allOccurrences * 100);
-		System.out.println("Accuracy = " + allCorrectGuesses + "/" + allOccurrences + " = " + accuracy + "%\n");
+		System.out.println("\nAccuracy = " + allCorrectGuesses + "/" + allOccurrences + " = " + accuracy + "%");
 	}
 	
 	int inputLayer = 0;
